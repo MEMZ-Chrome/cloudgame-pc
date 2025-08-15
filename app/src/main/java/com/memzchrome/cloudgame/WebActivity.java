@@ -1,6 +1,6 @@
 package com.memzchrome.cloudgame;
 
-import android.app.Activity;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.window.OnBackInvokedDispatcher;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
@@ -23,9 +24,30 @@ import java.util.Locale;
 
 import com.memzchrome.cloudgame.webview.GameView;
 import com.memzchrome.cloudgame.webview.IWebPageCallback;
-import com.memzchrome.cloudgame.webview.UtilsKt;
+import android.view.MenuItem;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class WebActivity extends Activity implements IWebPageCallback {
+public class WebActivity extends AppCompatActivity implements IWebPageCallback {
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
+    }
 
     public static final String START_SCRIPT = "page_start_scripts";
     public static final String LOADED_SCRIPT = "page_load_scripts";
@@ -34,10 +56,54 @@ public class WebActivity extends Activity implements IWebPageCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setupActivity();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // 禁用返回键
+        getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                () -> {
+                    // 不执行任何操作，禁用返回键
+                }
+        );
+
+        setupActivity();
         loadWeb();
+
+        // 侧边栏按钮点击事件
+        findViewById(R.id.btn_ys).setOnClickListener(v -> {
+            loadUrl("https://ys.mihoyo.com/cloud/");
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+        findViewById(R.id.btn_sr).setOnClickListener(v -> {
+            loadUrl("https://sr.mihoyo.com/cloud/");
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+        findViewById(R.id.btn_add_custom).setOnClickListener(v -> {
+            // TODO: 实现添加自定义URL功能
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+        findViewById(R.id.btn_exit).setOnClickListener(v -> {
+            finishAffinity();
+            System.exit(0);
+        });
+        findViewById(R.id.btn_about).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+        findViewById(R.id.btn_settings).setOnClickListener(v -> {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        });
+
+        // TODO: 实现自定义URL的添加和记忆功能
     }
 
     private void enableImmersiveMode() {
@@ -75,9 +141,13 @@ public class WebActivity extends Activity implements IWebPageCallback {
         });
         String url = getIntent().getStringExtra("url");
         if (TextUtils.isEmpty(url)) {
-            url = Configuration.DEFAULT_URL;
+            url = Configuration.getConfiguration().getStringValue(Configuration.LAUNCH_URL, Configuration.DEFAULT_URL);
         }
-        view.loadUrl(url);
+        loadUrl(url);
+    }
+
+    private void loadUrl(String url) {
+        webView.loadUrl(url);
     }
 
     @Override
@@ -97,8 +167,12 @@ public class WebActivity extends Activity implements IWebPageCallback {
     }
     @Override
     public void onBackPressed() {
-        // 禁用返回键，不执行任何操作
-        // super.onBackPressed();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            // 禁用返回键，不执行任何操作
+            // super.onBackPressed();
+        }
     }
 
     @Override

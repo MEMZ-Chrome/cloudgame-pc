@@ -22,16 +22,10 @@ public class MainActivity extends Activity {
         Configuration.getConfiguration().preloadPageStartScripts(this);
         
         // 直接启动WebActivity
-        String defaultUrl = Configuration.getConfiguration().getStringValue("default_game", "ys");
-        String url;
-        if ("sr".equals(defaultUrl)) {
-            url = "https://sr.mihoyo.com/cloud/";
-        } else {
-            url = "https://ys.mihoyo.com/cloud/";
-        }
+        String defaultUrl = Configuration.getConfiguration().getStringValue(Configuration.LAUNCH_URL, Configuration.DEFAULT_URL);
         
         Intent intent = new Intent(this, WebActivity.class);
-        intent.putExtra("url", url);
+        intent.putExtra("url", defaultUrl);
         startActivity(intent);
         finish();
     }

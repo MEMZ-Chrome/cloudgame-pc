@@ -33,7 +33,10 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ContentActivity"
+            android:name=".AboutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".WebActivity"

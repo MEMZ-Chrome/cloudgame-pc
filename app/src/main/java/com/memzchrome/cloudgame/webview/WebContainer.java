@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 
 import com.memzchrome.cloudgame.Configuration;
-import com.memzchrome.cloudgame.pages.SettingsPageKt;
 
 public class WebContainer extends LinearLayout {
 
@@ -44,7 +43,7 @@ public class WebContainer extends LinearLayout {
     }
 
     private void initParams() {
-        mouseSpeed = SettingsPageKt.getMouseSpeed(Configuration.getConfiguration().getMouseSpeedLevel());
+        mouseSpeed = Configuration.getConfiguration().getIntValue("mouse_speed", 50) / 50.0f;
         enableUserMouseSpeed = mouseSpeed != 1.f;
     }
 

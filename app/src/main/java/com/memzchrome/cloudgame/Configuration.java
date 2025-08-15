@@ -146,4 +146,16 @@ public class Configuration {
         kv.encode("mouse_speed", level);
     }
 
+    public int getIntValue(String key, int def) {
+        return kv.decodeInt(key, def);
+    }
+
+    public void setIntValue(String key, int value) {
+        kv.encode(key, value);
+    }
+
+    public boolean getBooleanValue(String key, boolean def) {
+        return kv.decodeBool(key, def);
+    }
+
 }
