@@ -76,7 +76,7 @@ public class Configuration {
         if (readBooleanValue(Configuration.V_CONSOLE)) {
             scripts.add(mScriptMap.get(Configuration.V_CONSOLE));
         }
-        if (readBooleanValue("touch_mode")) {
+        if (readBooleanValue("no_paimon_mode")) {
             scripts.add(mScriptMap.get(Configuration.TOUCH_BUTTONS));
         }
         scripts.add(mScriptMap.get(Configuration.ENHANCE_PC));

@@ -7,6 +7,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.memzchrome.cloudgame.Configuration;
 
 public class JSBridge {
 
@@ -72,4 +73,11 @@ public class JSBridge {
     public Gson getGson() {
         return mGson;
     }
+
+    @JavascriptInterface
+    public boolean isTouchModeEnabled() {
+        return Configuration.getConfiguration().getBooleanValue("no_paimon_mode", false);
+    }
 }
+
+
